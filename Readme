@@ -1,0 +1,11 @@
+Cara import Database ke PHPMYADMIN
+
+1.Jalankan Server XAMPP
+2.Buka PHPMYADMIN
+3.setelah buka PHPMYADMIN buat database dengan nama db_hotel
+4.setelah itu klik database db_hotel di PHPMYADMIN
+5.setelah itu cari menu import
+6. setelah masuk ke menu import cari choose file atau tambahkan file di (file to import) 
+7.setelah pilih file db_hotel_sql yang sudah ada di dalam folder kamar
+
+and happy coding 

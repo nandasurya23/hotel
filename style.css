@@ -71,6 +71,16 @@ nav {
   width: 10%;
 }
 
+.btn-hero {
+  width: 20%;
+  margin-top: 20px;
+}
+
+.btn a {
+  text-decoration: none;
+  color: #fff;
+}
+
 .btn button {
   padding: 8px;
   border: 1px solid #fff;
@@ -176,6 +186,33 @@ label {
 }
 
 input[type="text"] {
+  padding: 8px;
+  outline: none;
+  border: none;
+  border-radius: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+input[type="password"] {
+  padding: 8px;
+  outline: none;
+  border: none;
+  border-radius: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+input[type="email"] {
+  padding: 8px;
+  outline: none;
+  border: none;
+  border-radius: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+input[type="number"] {
   padding: 8px;
   outline: none;
   border: none;
@@ -332,4 +369,69 @@ footer {
 footer h1 {
   font-size: 18px;
   letter-spacing: 2px;
+}
+
+/* login page */
+.login {
+  background-color: #2a2a2a;
+  height: 100vh;
+  padding: 20px;
+}
+
+.login h1 {
+  text-align: center;
+  font-size: 25px;
+  color: #fff;
+  letter-spacing: 2px;
+}
+
+.login form {
+  margin: 0 auto;
+  margin-top: 10%;
+  height: 35%;
+}
+
+.login a {
+  text-decoration: underline;
+  color: #fff;
+  margin-left: 20px;
+}
+
+.login label {
+  color: #fff;
+}
+
+.login-btn-container {
+  display: flex;
+  align-items: center;
+}
+
+/* register */
+.register {
+  background-color: #2a2a2a;
+  height: 100vh;
+  padding: 20px;
+}
+
+.register h1 {
+  text-align: center;
+  font-size: 25px;
+  color: #fff;
+  letter-spacing: 2px;
+}
+
+.register form {
+  margin: 0 auto;
+  margin-top: 10%;
+  height: 60%;
+}
+
+.register a {
+  text-decoration: underline;
+  color: #fff;
+  margin-left: 20px;
+}
+
+.register label {
+  color: #fff;
 }
