@@ -212,6 +212,15 @@ input[type="email"] {
   margin-bottom: 10px;
 }
 
+input[type="file"] {
+  padding: 8px;
+  outline: none;
+  border: none;
+  border-radius: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
 input[type="number"] {
   padding: 8px;
   outline: none;
@@ -434,4 +443,47 @@ footer h1 {
 
 .register label {
   color: #fff;
+}
+
+/* Admin Page */
+
+.admin {
+  background-color: #2a2a2a;
+  height: 100vh;
+  padding: 20px;
+  color: #fff;
+}
+
+.admin form {
+  margin-top: 10%;
+}
+
+.dashboard {
+  padding-top: 100px;
+  background-color: #2a2a2a;
+  color: #fff;
+  height: 100vh;
+}
+
+.dashboard a {
+  color: #fff;
+}
+
+.dashboard table {
+  margin: 0 auto;
+  width: 90%;
+}
+
+.dashboard td,
+.dashboard th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.dashboard th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #2d2d2d;
+  color: white;
 }

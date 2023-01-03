@@ -9,3 +9,116 @@ Cara import Database ke PHPMYADMIN
 7.setelah pilih file db_hotel_sql yang sudah ada di dalam folder kamar
 
 and happy coding 
+
+
+
+            <?php
+            // koneksi ke database
+            include 'koneksi.php';
+
+            // menangkap data yang dikirim dari form
+            $name = $_POST['name'];
+            $room_type = $_POST['room_type'];
+            $check_in_date = $_POST['check_in_date'];
+            $check_out_date = $_POST['check_out_date'];
+
+            // mengecek apakah tanggal check-in sama dengan tanggal check-out
+            if ($check_in_date == $check_out_date) {
+                echo "Tanggal check-in dan check-out tidak boleh sama.";
+            } else {
+                // mengecek apakah tanggal check-in lebih besar dari tanggal check-out
+                if ($check_in_date > $check_out_date) {
+                    echo "Tanggal check-in tidak boleh lebih besar dari tanggal check-out.";
+                } else {
+                    // mengecek ketersediaan kamar
+                    $result = mysqli_query($conn, "SELECT * FROM room WHERE room_type = '$room_type' AND availability = 'available'");
+                    $row = mysqli_fetch_array($result);
+                    if ($row) {
+                        // jika kamar tersedia, melakukan pemesanan'
+
+                        $query = "INSERT INTO booking (name, room_type, check_in_date, check_out_date) VALUES ('$name', '$room_type', '$check_in_date', '$check_out_date')";
+                        mysqli_query($conn, $query);
+
+                        // mengupdate ketersediaan kamar menjadi 'not available'
+                        $query = "UPDATE room SET availability = 'not available' WHERE room_type = '$room_type'";
+                        mysqli_query($conn, $query);
+
+                        // menampilkan pesan sukses
+                        echo "Booking berhasil dilakukan!";
+                    } else {
+                        // jika kamar tidak tersedia, menampilkan pesan gagal
+                        echo "Maaf, kamar tidak tersedia pada tanggal yang dipilih.";
+                    }
+                    // menampilkan invoice di page yang berbeda
+                    header("Location: detail_booking.php");
+                }
+            }
+            ?>
+
+
+
+
+
+
+<?php
+            // koneksi ke database
+            include 'koneksi.php';
+
+            // menampilkan data invoice yang sudah diinput oleh user
+            $result = mysqli_query($conn, "SELECT * FROM payment WHERE name = '$name'");
+
+            while ($row = mysqli_fetch_array($result)) {
+                $payment_id = $row['payment_id'];
+                $name = $row['name'];
+                $payment_status = $row['payment_status'];
+                $payment_proof = $row['payment_proof'];
+            }
+
+            // menampilkan invoice
+            echo "INVOICE<br>";
+            echo "Nama tamu: " . $name . "<br>";
+            echo "Tipe kamar: " . $room_type . "<br>";
+            echo "Tanggal check-in: " . $check_in_date . "<br>";
+            echo "Tanggal check-out: " . $check_out_date . "<br>";
+
+            // menampilkan nomor rekening yang ditujukan
+            $result = mysqli_query($conn, "SELECT * FROM bank WHERE bank_name");
+            $row = mysqli_fetch_array($result);
+            $bank_name = $row['bank_name'];
+            $bank_account = $row['bank_account'];
+            echo "Nama BANK: " . $bank_name . "<br>";
+            echo "Nomor rekening: " . $bank_account . "<br>";
+
+            // menghitung lama menginap
+            $check_in = new DateTime($check_in_date);
+            $check_out = new DateTime($check_out_date);
+            $interval = $check_in->diff($check_out);
+            $nights = $interval->format('%a');
+
+            // mengambil harga kamar
+            $result = mysqli_query($conn, "SELECT * FROM room WHERE room_type = '$room_type'");
+            $row = mysqli_fetch_array($result);
+            $price = $row['price'];
+            $total_price = $price * $nights;
+            echo "Total yang harus dibayarkan: Rp. " . $total_price . "<br>";
+
+            // menampilkan status pembayaran
+            echo "Status Pembayaran: ";
+            $result = mysqli_query($conn, "SELECT * FROM payment WHERE name = '$name'");
+            $row = mysqli_fetch_array($result);
+            if ($row['payment_status'] == "Belum Bayar") {
+                echo "Belum Bayar<br>";
+            } else {
+                echo "Sudah Bayar<br>";
+                echo "Bukti Pembayaran:<br>";
+                echo "<a href='" . $row['payment_proof'] . "'>Lihat Bukti Pembayaran</a>";
+                // jika user belum melakukan pembayaran, tambahkan form untuk mengunggah bukti pembayaran
+                if ($row['payment_status'] == "Belum Bayar") {
+                    echo "<br>Unggah Bukti Pembayaran:<br>";
+                    echo "<form action='upload.php' method='post' enctype='multipart/form-data'>";
+                    echo "  <input type='file' name='file'><br>";
+                    echo "  <input type='submit' value='Unggah'>";
+                    echo "</form>";
+                }
+            }
+            ?>

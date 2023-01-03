@@ -13,6 +13,7 @@
     <title>Hotel Jaya</title>
 </head>
 
+
 <body>
     <!-- Navigasi Menu -->
     <nav>
@@ -94,22 +95,104 @@
     <!-- booking -->
     <div class="booking" id="book">
         <div class="wrapper">
+            <?php
+
+            // mulai sesi
+            session_start();
+
+            // cek apakah user sudah login atau belum
+            if (!isset($_SESSION['username'])) {
+                // jika belum login, tampilkan pesan dan form booking hanya untuk informasi saja
+                $is_logged_in = false;
+            } else {
+                $is_logged_in = true;
+            }
+            // koneksi ke database
+            include 'koneksi.php';
+
+            // menangkap data yang dikirim dari form
+            $name = $_POST['name'];
+            $room_type = $_POST['room_type'];
+            $check_in_date = $_POST['check_in_date'];
+            $check_out_date = $_POST['check_out_date'];
+
+            // mengecek apakah tanggal check-in sama dengan tanggal check-out
+            if ($check_in_date == $check_out_date) {
+                echo "<p style='text-align:center;'>Isi Form Dengan Lengkap</p>";
+            } else {
+                // mengecek apakah tanggal check-in lebih besar dari tanggal check-out
+                if ($check_in_date > $check_out_date) {
+                    echo "Tanggal check-in tidak boleh lebih besar dari tanggal check-out.";
+                } else {
+                    // mengecek ketersediaan kamar
+                    $result = mysqli_query($conn, "SELECT * FROM room WHERE room_type = '$room_type' AND availability = 'available'");
+                    $row = mysqli_fetch_array($result);
+                    if ($row) {
+                        // jika kamar tersedia, melakukan pemesanan'
+
+                        $query = "INSERT INTO booking (name, room_type, check_in_date, check_out_date) VALUES ('$name', '$room_type', '$check_in_date', '$check_out_date')";
+                        mysqli_query($conn, $query);
+
+                        // mengupdate ketersediaan kamar menjadi 'not available'
+                        $query = "UPDATE room SET availability = 'not available' WHERE room_type = '$room_type'";
+                        mysqli_query($conn, $query);
+
+                        // menampilkan pesan sukses
+                        echo "Booking berhasil dilakukan!";
+                    } else {
+                        // jika kamar tidak tersedia, menampilkan pesan gagal
+                        echo "Maaf, kamar tidak tersedia pada tanggal yang dipilih.";
+                    }
+                    // mengambil ID pemesanan terbaru
+                    $query = "SELECT booking_id FROM booking ORDER BY booking_id DESC LIMIT 1";
+                    $result = mysqli_query($conn, $query);
+                    $booking = mysqli_fetch_assoc($result);
+                    $booking_id = $booking['booking_id'];
+
+                    // mengambil nomor WhatsApp dari database
+                    $query = "SELECT phone_number FROM contact WHERE channel = 'WhatsApp'";
+                    $result = mysqli_query($conn, $query);
+                    $contact = mysqli_fetch_assoc($result);
+                    $phone_number = $contact['phone_number'];
+
+                    // mengarahkan user ke aplikasi WhatsApp
+                    header("Location: https://api.whatsapp.com/send?phone=$phone_number&text=Halo%20saya%20ingin%20melakukan%20pembayaran%20untuk%20booking%20nomor%20$booking_id");
+                }
+            }
+            ?>
+            <p style="margin-bottom: 20px; margin-top:5px; font-size:14px; text-align:center;">
+                Anda Akan Di Arahakan Otomatis Ke WhatsApp Admin Hotel Jaya untuk Melakukan Pembayaran <br>
+                Jika Sudah Mengisi Form Booking.
+            </p>
             <div class="booking-container">
-                <form action="">
-                    <label for="Check-in">Check In</label>
-                    <input type="date" placeholder="Check In">
-                    <label for="Check-in">Check Out</label>
-                    <input type="date" placeholder="Check Out">
+                <form method="post" <?php if (!$is_logged_in) echo "disabled"; ?>>
                     <label for="Name">Nama</label>
-                    <input type="text" placeholder="Masukan Nama Anda...">
+                    <input type="text" name="name" value="<?php echo $name; ?>" placeholder="Masukan Nama Anda..." required>
                     <label for="Type Room">Tipe Kamar</label>
-                    <select id="Tipe Kamar">
-                        <option value="Pilih Tipe Kamar">PIlih Tipe Kamar</option>
-                        <option value="STANDAR">STANDAR</option>
-                        <option value="VIP">VIP</option>
-                        <option value="VVIP">VVIP</option>
+                    <select name="room_type" required>
+                        <?php
+                        // koneksi ke database
+                        include 'koneksi.php';
+
+                        // menampilkan jenis kamar yang tersedia
+                        $result = mysqli_query($conn, "SELECT room_type, price FROM room WHERE availability = 'available'");
+                        while ($row = mysqli_fetch_array($result)) {
+                            echo "<option value='" . $row['room_type'] . "'>" . $row['room_type'] . " (Rp " . $row['price'] . ")</option>";
+                        }
+                        ?>
                     </select>
-                    <input type="submit" value="Booking">
+                    <label for="Check-in">Check In</label>
+                    <input type="date" name="check_in_date" value="<?php echo $check_in_date; ?>" required>
+                    <label for="Check-in">Check Out</label>
+                    <input type="date" name="check_out_date" value="<?php echo $check_in_date; ?>" required>
+                    <input type="submit" value="Booking" formtarget="_blank" <?php if (!$is_logged_in) echo "disabled"; ?>>
+                    <!-- pesan jika belum login -->
+                    <?php if (!$is_logged_in) : ?>
+                        <br>
+                        <p>Anda harus <a style="color: #fff;" href="login.php">login</a> terlebih dahulu untuk melakukan booking.</p>
+                        <br>
+                        <p>Jika Belum Memiliki Akun Anda Bisa <a style="color: #fff;" href="register.php">Register</a> terlebih dahulu</p>
+                    <?php endif; ?>
                 </form>
                 <img src="img/booking-ilustrator.png" alt="booking">
             </div>

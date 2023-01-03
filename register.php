@@ -39,7 +39,7 @@ if (isset($_POST['submit'])) {
                     VALUES ('$username', '$email', '$password')";
             $result = mysqli_query($conn, $sql);
             if ($result) {
-                echo "<script>alert('Selamat, registrasi berhasil!')</script>";
+                echo "<script>alert('Selamat, registrasi berhasil!'); document.location.href = 'login.php';</script>";
                 $username = "";
                 $email = "";
                 $_POST['password'] = "";
